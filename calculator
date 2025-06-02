@@ -1,0 +1,81 @@
+import java.util.*;
+import java.util.function.BinaryOperator;
+public class LambdaCalculator {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        Map<String, BinaryOperator<Double>> operations = Map.of(
+            "+", Double::sum,
+            "-", (a, b) -> a - b,
+            "*", (a, b) -> a * b,
+            "/", (a, b) -> a / b
+        );
+        while (true) {
+            System.out.println("Welcome to Real-Time Lambda Calculator!");
+            System.out.println("Available operations: + (add), - (subtract), * (multiply), / (divide)");
+
+            double result;
+            List<Double> numberList = new ArrayList<>(); 
+            while (true) {
+                System.out.print("Enter the first number: ");
+                String input = scanner.next();
+                try {
+                    result = Double.parseDouble(input);
+                    numberList.add(result);
+                    break;
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid number. Try again.");
+                }
+            }
+            while (true) {
+                String operator;
+                while (true) {
+                    System.out.print("Enter an operator (+, -, *, /) or 'done' to finish: ");
+                    operator = scanner.next();
+                    if (operator.equalsIgnoreCase("done")) {
+                        break;
+                    }
+                    if (operations.containsKey(operator)) {
+                        break;
+                    } else {
+                        System.out.println("Invalid operator! Try again.");
+                    }
+                }
+                if (operator.equalsIgnoreCase("done")) {
+                    break;
+                }
+                double nextNumber;
+                while (true) {
+                    System.out.print("Enter the next number: ");
+                    String input = scanner.next();
+                    if (operator.equals("/") && input.equals("0")) {
+                        System.out.println("Cannot divide by zero. Try a different number.");
+                        continue;
+                    }
+                    try {
+                        nextNumber = Double.parseDouble(input);
+                        numberList.add(nextNumber);
+                        break;
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid number. Try again.");
+                    }
+                }
+                result = operations.get(operator).apply(result, numberList.get(numberList.size() - 1));
+                System.out.printf("Current result = %.4f%n", result);
+            }
+            System.out.println("Numbers used (unsorted): " + numberList);
+
+            List<Double> sortedNumbers = new ArrayList<>(numberList);
+            Collections.sort(sortedNumbers);
+            System.out.println("Numbers used (sorted): " + sortedNumbers);
+            System.out.printf("Final result = %.4f%n", result);
+            System.out.print("Do you want to perform another calculation? (yes/no): ");
+            String again = scanner.next();
+            if (!again.equalsIgnoreCase("yes")) {
+                System.out.println("Exiting calculator. Goodbye!");
+                break;
+            }
+            System.out.println();
+        }
+        scanner.close();
+    }
+}
